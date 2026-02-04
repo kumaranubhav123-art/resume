@@ -1,0 +1,45 @@
+name: Deploy Web Application to EC2
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up SSH to EC2
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      # Step 3: Set up AWS credentials
+      - name: Set up AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change to your desired AWS region
+
+      # Step 4: Install dependencies (if any, like Node.js, Python, etc.)
+      - name: Install Dependencies
+        run: |
+          # For example, if you have a Node.js application:
+          # npm install
+
+      # Step 5: Deploy to EC2
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-public-ip << 'EOF'
+            cd /var/www/html  # Your project directory on EC2
+            git pull origin main  # Pull the latest code from GitHub (ensure you have git installed on EC2)
+            # If needed, restart your web server (e.g., Nginx, Apache, or PM2 for Node.js)
+            sudo systemctl restart nginx  # Example for Nginx
+          EOF
