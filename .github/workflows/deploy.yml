@@ -37,7 +37,7 @@ jobs:
       # Step 5: Deploy to EC2
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-public-ip << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-user@34.226.218.19 << 'EOF'
             cd /var/www/html  # Your project directory on EC2
             git pull origin main  # Pull the latest code from GitHub (ensure you have git installed on EC2)
             # If needed, restart your web server (e.g., Nginx, Apache, or PM2 for Node.js)
